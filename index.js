@@ -1,8 +1,10 @@
 const express = require('express')
-const app = express()
 const cors = require('cors')
 require('dotenv').config()
 const { MongoClient } = require('mongodb');
+const ObjectId = require('mongodb').ObjectId;
+
+const app = express()
 const port = process.env.PORT || 5000;
 
 
@@ -22,12 +24,16 @@ async function run() {
         const lotionsCollection = database.collection("lotions")
 
 
+        const database2 = client.db("orderdLotions")
+        const purchasedProducts = database2.collection("purchasing")
+
+
         // Post Api
         app.post('/lotions', async (req, res) => {
             const lotion = req.body;
             console.log('everything is ok', lotion);
             const result = await lotionsCollection.insertOne(lotion)
-            res.send(result)
+            res.json(result)
         })
 
         // Get Api 
@@ -35,6 +41,22 @@ async function run() {
             const cursor = lotionsCollection.find({});
             const lotions = await cursor.toArray();
             res.send(lotions);
+        })
+
+        // Post Api Purchasing
+
+        app.post('/purchasing', async (req, res) => {
+            const bid = req.body;
+            const result = await purchasedProducts.insertOne(bid)
+            res.send(result);
+        })
+
+        // Get purchaing
+
+        app.get('/purchasingProducts/:id', async (req, res) => {
+            console.log(req.params.id)
+            const result = await purchasedProducts.find({ _id: ObjectId(req.params.id) }).toArray();
+            res.send(result[0]);
         })
     }
     finally {
