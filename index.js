@@ -55,7 +55,7 @@ async function run() {
 
         app.get('/purchasingProducts/:id', async (req, res) => {
             console.log(req.params.id)
-            const result = await purchasedProducts.find({ _id: ObjectId(req.params.id) }).toArray();
+            const result = await lotionsCollection.find({ _id: ObjectId(req.params.id) }).toArray();
             res.send(result[0]);
         })
     }
